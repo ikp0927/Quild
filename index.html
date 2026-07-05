@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoLQ&A – League of Legends 攻略コミュニティ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c89520;
+    --gold-light: #fef9ec;
+    --gold-hover: #a87d18;
+    --navy: #1e293b;
+    --blue: #1d4ed8;
+    --blue-light: #eff6ff;
+    --blue-border: #bfdbfe;
+    --red: #ef4444;
+    --red-light: #fef2f2;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --bg: #f1f5f9;
+    --surface: #fff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-sub: #475569;
+    --text-muted: #94a3b8;
+    --font: 'Noto Sans JP', sans-serif;
+  }
+
+  html, body { height: 100%; background: var(--bg); font-family: var(--font); color: var(--text); font-size: 14px; }
+
+  /* ─── HEADER ─── */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    height: 56px;
+    display: flex; align-items: center;
+    padding: 0 32px;
+    gap: 16px;
+  }
+  .logo { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -.3px; white-space: nowrap; }
+  .logo em { color: var(--gold); font-style: normal; }
+  .header-search {
+    flex: 1; max-width: 420px;
+    position: relative;
+  }
+  .header-search input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 8px 16px 8px 38px;
+    font-size: 13px; font-family: var(--font); color: var(--text);
+    outline: none; transition: border-color .15s;
+  }
+  .header-search input:focus { border-color: var(--gold); background: #fff; }
+  .header-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+  .header-nav { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .btn { font-family: var(--font); font-size: 13px; padding: 7px 16px; border-radius: 7px; cursor: pointer; transition: all .15s; line-height: 1; }
+  .btn-ghost { background: #fff; border: 1px solid var(--border); color: var(--text-sub); }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-gold { background: var(--gold); border: none; color: #fff; font-weight: 600; }
+  .btn-gold:hover { background: var(--gold-hover); }
+  .btn-navy { background: var(--navy); border: none; color: #fff; }
+  .btn-navy:hover { background: #334155; }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 32px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .hero-text h1 { font-size: 22px; font-weight: 700; color: var(--navy); }
+  .hero-text p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .hero-ask { display: flex; gap: 10px; align-items: center; }
+  .hero-ask-note { font-size: 12px; color: var(--text-muted); }
+
+  /* ─── BODY ─── */
+  .body-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ─── MAIN COLUMN ─── */
+  .main-col { display: flex; flex-direction: column; gap: 0; }
+
+  .tab-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    border-bottom: none;
+  }
+  .tab-btn {
+    flex: 1; padding: 14px 0; font-size: 13px; font-weight: 600;
+    color: var(--text-muted); background: none; border: none; cursor: pointer;
+    font-family: var(--font); border-bottom: 2px solid transparent;
+    transition: color .15s; margin-bottom: -1px;
+  }
+  .tab-btn.active { color: var(--navy); border-bottom-color: var(--gold); }
+  .tab-divider { width: 1px; background: var(--border); margin: 10px 0; }
+
+  .filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 10px 16px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .chip {
+    font-size: 12px; padding: 5px 15px; border-radius: 20px;
+    border: 1px solid var(--border); background: #fff; color: var(--text-sub);
+    cursor: pointer; font-family: var(--font); transition: all .15s;
+  }
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+  .chip.active-chip { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 600; }
+  .chip.urgent-chip { border-color: #fecaca; color: var(--red); background: var(--red-light); }
+
+  .q-list-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+  }
+  .q-row {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background .12s;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .q-row:last-child { border-bottom: none; }
+  .q-row:hover { background: #fafbfc; }
+  .q-row-cat { font-size: 11px; color: var(--text-sub); }
+  .q-row-title { font-size: 14px; color: var(--blue); font-weight: 500; line-height: 1.45; }
+  .q-row-title:hover { text-decoration: underline; }
+  .q-row-meta { display: flex; align-items: center; gap: 10px; }
+  .q-icon { width: 16px; height: 16px; border-radius: 50%; background: var(--border); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+  .q-icon.answered { background: #fef3c7; color: #d97706; }
+  .q-cnt { font-size: 11px; color: var(--text-muted); }
+  .q-date { font-size: 11px; color: var(--text-muted); }
+  .q-ans-ok { font-size: 11px; color: var(--green); font-weight: 600; }
+  .urgent-badge { font-size: 10px; padding: 1px 7px; border-radius: 3px; background: var(--red-light); color: var(--red); border: 1px solid #fecaca; margin-left: 4px; }
+
+  /* CATEGORY SECTION */
+  .cat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; margin-top: 16px;
+  }
+  .cat-card-title { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 12px; }
+  .cat-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cat-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 13px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg);
+    cursor: pointer; transition: all .15s;
+  }
+  .cat-chip:hover, .cat-chip.active-cat { border-color: var(--gold); background: var(--gold-light); }
+  .cat-chip-name { font-size: 12px; color: var(--text-sub); }
+  .cat-chip.active-cat .cat-chip-name { color: var(--gold); font-weight: 600; }
+  .cat-count { font-size: 10px; color: var(--text-muted); background: var(--border); padding: 1px 6px; border-radius: 8px; }
+
+  /* ─── SIDEBAR ─── */
+  .side-col { display: flex; flex-direction: column; gap: 14px; }
+  .side-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .side-card-head {
+    padding: 11px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px; font-weight: 700; color: var(--text-sub);
+    letter-spacing: .6px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .rank-list { padding: 4px 0; }
+  .rank-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 16px;
+    border-bottom: 1px solid #f8fafc;
+    cursor: pointer; transition: background .12s;
+  }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-row:hover { background: #fafbfc; }
+  .rank-num { width: 20px; font-size: 13px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; text-align: center; }
+  .rn1 { color: #f59e0b; }
+  .rn2 { color: #94a3b8; }
+  .rn3 { color: #c27c4a; }
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-q { font-size: 12px; color: var(--blue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.35; }
+  .rank-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .rank-votes { font-size: 12px; color: var(--gold); font-weight: 700; flex-shrink: 0; }
+  .rank-cnt { font-size: 11px; color: var(--red); font-weight: 600; flex-shrink: 0; }
+
+  /* ─── DETAIL VIEW ─── */
+  #detail-page { display: none; }
+  .detail-wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px; display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: start; }
+  .detail-main { display: flex; flex-direction: column; gap: 12px; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font); font-size: 13px; padding: 7px 14px;
+    border-radius: 7px; border: 1px solid var(--border);
+    background: #fff; color: var(--text-sub); cursor: pointer; transition: all .15s;
+  }
+  .back-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .detail-q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .detail-q-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .q-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue-border); }
+  .q-tag-urgent { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--red-light); color: var(--red); border: 1px solid #fecaca; }
+  .detail-q-title { font-size: 18px; font-weight: 700; color: var(--navy); line-height: 1.4; margin-bottom: 10px; }
+  .detail-q-body { font-size: 13px; color: var(--text-sub); line-height: 1.75; }
+  .answers-header { font-size: 13px; color: var(--text-muted); }
+  .answer-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .answer-card.best-ans { border-color: #fcd34d; background: #fffdf5; }
+  .ans-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .ans-author { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .rbadge { font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 600; }
+  .rc { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+  .rm { background: #fdf4ff; color: #a21caf; border: 1px solid #f0abfc; }
+  .rd { background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue-border); }
+  .rp { background: var(--green-light); color: #15803d; border: 1px solid var(--green-border); }
+  .role-p { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; font-size: 11px; padding: 2px 7px; border-radius: 4px; }
+  .role-s { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; font-size: 11px; padding: 2px 7px; border-radius: 4px; }
+  .role-c { background: var(--green-light); color: #166534; border: 1px solid var(--green-border); font-size: 11px; padding: 2px 7px; border-radius: 4px; }
+  .ans-name { font-size: 13px; color: var(--navy); font-weight: 600; }
+  .xlink { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--text-sub); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; text-decoration: none; }
+  .xlink:hover { border-color: var(--text-muted); color: var(--navy); }
+  .vote-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .vote-btn {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; padding: 5px 12px; border-radius: 7px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text-sub); cursor: pointer; font-family: var(--font); transition: all .15s;
+  }
+  .vote-btn:hover, .vote-btn.voted { border-color: var(--gold); color: var(--gold); background: var(--gold-light); font-weight: 600; }
+  .best-pill { font-size: 10px; color: #b45309; background: #fef3c7; border: 1px solid #fcd34d; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+  .ans-body { font-size: 13px; color: var(--text-sub); line-height: 1.75; }
+  .ans-form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .ans-form-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+  .form-group { margin-bottom: 12px; }
+  .form-label { font-size: 12px; color: var(--text-sub); margin-bottom: 5px; display: block; }
+  .form-input {
+    width: 100%; background: #fff; border: 1px solid var(--border);
+    border-radius: 7px; padding: 8px 11px; font-size: 13px; color: var(--text);
+    outline: none; font-family: var(--font); transition: border-color .15s;
+  }
+  .form-input:focus { border-color: var(--gold); }
+  .form-textarea { width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 7px; padding: 8px 11px; font-size: 13px; color: var(--text); outline: none; resize: vertical; min-height: 90px; font-family: var(--font); transition: border-color .15s; }
+  .form-textarea:focus { border-color: var(--gold); }
+  .form-row { display: flex; gap: 10px; }
+  .form-row .form-group { flex: 1; }
+  .xpre-wrap { position: relative; }
+  .xpre { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; pointer-events: none; }
+  .xpre + .form-input { padding-left: 22px; }
+  .submit-btn { background: var(--gold); color: #fff; border: none; border-radius: 7px; padding: 9px 22px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: background .15s; }
+  .submit-btn:hover { background: var(--gold-hover); }
+
+  /* MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; align-items: center; justify-content: center; }
+  .modal-bg.show { display: flex; }
+  .modal { background: #fff; border-radius: 14px; padding: 32px; width: 360px; box-shadow: 0 16px 48px rgba(0,0,0,.14); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .modal-title { font-size: 16px; font-weight: 700; color: var(--navy); }
+  .modal-close { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; line-height: 1; }
+  .modal-submit { width: 100%; background: var(--gold); color: #fff; border: none; border-radius: 7px; padding: 11px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); margin-top: 4px; transition: background .15s; }
+  .modal-submit:hover { background: var(--gold-hover); }
+  .modal-switch { text-align: center; margin-top: 14px; font-size: 12px; color: var(--text-muted); }
+  .modal-switch a { color: var(--gold); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">LoL<em>Q&A</em></div>
+  <div class="header-search">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="チャンピオン名・キーワードで検索…" id="searchInput" oninput="onSearch(this.value)">
+  </div>
+  <nav class="header-nav">
+    <button class="btn btn-ghost" onclick="openModal('login')">ログイン</button>
+    <button class="btn btn-gold" onclick="openModal('register')">会員登録</button>
+    <button class="btn btn-navy" onclick="showAsk()">＋ 質問する</button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-text">
+    <h1>League of Legends 攻略Q&Aコミュニティ</h1>
+    <p>疑問を投稿して、プロ・ストリーマー・上位ランカーから回答をもらおう</p>
+  </div>
+  <div class="hero-ask">
+    <span class="hero-ask-note">あなたの疑問を解決しよう</span>
+    <button class="btn btn-gold" onclick="showAsk()">今すぐ質問する</button>
+  </div>
+</div>
+
+<!-- LIST PAGE -->
+<div id="list-page">
+  <div class="body-wrap">
+    <!-- MAIN -->
+    <div class="main-col">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="setTab(this,'open')">回答募集中</button>
+        <div class="tab-divider"></div>
+        <button class="tab-btn" onclick="setTab(this,'solved')">最新の解決済み</button>
+      </div>
+      <div class="filter-bar">
+        <span class="chip active-chip" onclick="setFilter(this,'all')">おすすめ</span>
+        <span class="chip urgent-chip" onclick="setFilter(this,'urgent')">🔥 回答急募！</span>
+        <span class="chip" onclick="setFilter(this,'beginner')">初心者向け</span>
+        <span class="chip" onclick="setFilter(this,'meta')">メタ考察</span>
+        <span class="chip" onclick="setFilter(this,'champ')">チャンピオン</span>
+      </div>
+      <div id="search-banner" style="display:none; background:#fef9ec; border:1px solid #fde68a; border-top:none; padding:8px 16px; font-size:12px; color:#92400e; align-items:center; justify-content:space-between;">
+        <span id="search-banner-text"></span>
+        <button onclick="clearSearch()" style="font-size:11px;color:var(--gold);background:none;border:none;cursor:pointer;font-family:var(--font);">✕ クリア</button>
+      </div>
+      <div class="q-list-card" id="q-list"></div>
+      <!-- CATEGORY -->
+      <div class="cat-card">
+        <div class="cat-card-title">カテゴリから探す</div>
+        <div class="cat-grid" id="cat-grid"></div>
+      </div>
+    </div>
+    <!-- SIDEBAR -->
+    <div class="side-col">
+      <div class="side-card">
+        <div class="side-card-head">🏆 Q&Aランキング</div>
+        <div class="rank-list" id="rank-list"></div>
+      </div>
+      <div class="side-card">
+        <div class="side-card-head">🔥 急募の質問</div>
+        <div class="rank-list" id="urgent-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL PAGE -->
+<div id="detail-page"></div>
+
+<!-- ASK PAGE -->
+<div id="ask-page" style="display:none; max-width:700px; margin:24px auto; padding:0 24px;">
+  <button class="back-btn" onclick="showList()">← 一覧に戻る</button>
+  <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:28px;margin-top:14px;">
+    <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:20px;">質問を投稿する</div>
+    <div class="form-group"><label class="form-label">タイトル</label><input class="form-input" type="text" placeholder="例：ジャングルの序盤ルートはどうすればいいですか？"></div>
+    <div class="form-group"><label class="form-label">詳細・本文</label><textarea class="form-textarea" style="min-height:120px" placeholder="状況・ランク帯・試したことなども書くと回答が得やすいです。"></textarea></div>
+    <div class="form-group"><label class="form-label">タグを選択</label><div id="ask-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">緊急度</label>
+        <select class="form-input"><option>通常</option><option>🔥 回答急募！</option></select></div>
+    </div>
+    <button class="submit-btn" style="margin-top:4px;">質問を投稿する</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="closeModalBg(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const xSVG = `<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.635L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>`;
+
+const CATS = ['すべて','チャンピオン','ビルド','立ち回り','ジャングル','サポート','パッチノート','メタ考察'];
+const CAT_COUNTS = {すべて:1284,チャンピオン:342,ビルド:278,立ち回り:201,ジャングル:189,サポート:143,パッチノート:97,メタ考察:82};
+
+let questions = [
+  {id:0,title:"ジンのビルドで迷っています。クリティカル型とレタル型で何が違いますか？",body:"シーズン14からジンを使い始めました。クリティカルビルドとレタル（アーマー貫通）特化ビルドどちらがおすすめでしょうか？チームや試合状況によって変えるべきですか？",tags:["チャンピオン","ビルド"],author:"summoner_kei",time:"6/24 12:03",urgent:false,solved:false,
+    answers:[
+      {id:0,name:"Faker_JP",rank:"c",rankLabel:"チャレンジャー",role:"s",roleLabel:"ストリーマー",x:"fakerjp_lol",body:"クリティカル型は安定した継続ダメージが出せる一方、レタル型は序盤からの火力を重視するスタイルです。現環境では相手がタンク寄りの構成なら貫通ビルドが刺さります。まずはクリティカル型で基本を身に付けることをおすすめします。",votes:12,voted:false},
+      {id:1,name:"ADC_Takuya",rank:"m",rankLabel:"マスター",role:null,x:"adc_takuya",body:"試合序盤の強さを重視するならレタルから入るのもアリですが、ジン特有の4発目の確定クリが活きるのはクリティカル型です。",votes:7,voted:false},
+      {id:2,name:"botlane_nao",rank:null,rankLabel:null,role:null,x:null,body:"ゴールド帯であれば正直どちらでも勝てます。クリティカル型の方がビルド順が単純で扱いやすいので初心者にはそちらを。",votes:3,voted:false}
+    ]},
+  {id:1,title:"ジャングル初心者におすすめのチャンピオンを教えてください",body:"これまでボットレーン専門でしたがジャングルに挑戦したいです。初心者でも扱いやすくて試合に影響力のあるチャンピオンはどれですか？",tags:["ジャングル","立ち回り"],author:"rookie_jungle",time:"6/24 09:15",urgent:true,solved:false,
+    answers:[
+      {id:0,name:"JG_Hayato",rank:"m",rankLabel:"マスター",role:"p",roleLabel:"元プロ",x:"hayato_jg",body:"ウォーウィックかアムムをおすすめします。どちらもキャンプの処理が速く、CC能力もあるため試合への貢献が見えやすいです。序盤はフルクリア→ガンクの流れを覚えるだけで十分です。",votes:18,voted:false},
+      {id:1,name:"jungle_sensei",rank:"d",rankLabel:"ダイヤ",role:"c",roleLabel:"コーチ",x:"jungle_sensei_jp",body:"ヴィ―も選択肢の一つです。UltでターゲットをCCしながら飛び込めるため、ガンクの判断が楽になります。ただしオブジェクト管理の優先順位は早めに覚えておきましょう。",votes:9,voted:false},
+      {id:2,name:"noob_user99",rank:null,rankLabel:null,role:null,x:null,body:"私も最近ジャングルを始めました！同じ悩みでしたがアムムでランク上がりました。",votes:2,voted:false}
+    ]},
+  {id:2,title:"ダイヤ帯に上がるためにMIDで意識すべきことは何ですか？",body:"プラチナ1で数ヶ月止まっています。MIDレーナーとしてゲームへの影響力を高めるにはどのような点を改善すればよいでしょうか。CSは平均7/分前後です。",tags:["立ち回り","メタ考察"],author:"plat_mid",time:"6/23 18:42",urgent:false,solved:true,
+    answers:[
+      {id:0,name:"MID_Challenger",rank:"c",rankLabel:"チャレンジャー",role:"s",roleLabel:"ストリーマー",x:"mid_challenger_jp",body:"プラチナ帯で多いのは「レーンには勝っているが試合に負ける」パターンです。レーンが有利になったタイミングでローミングを仕掛けるか、プッシュしてビジョンを確保するかの判断を意識してみてください。",votes:21,voted:false},
+      {id:1,name:"mid_sensei_ryo",rank:"m",rankLabel:"マスター",role:null,x:"mid_ryo_lol",body:"ドラゴンとヘラルドのスポーンに合わせて位置取りを調整する習慣をつけると、プラチナ帯では頭一つ抜けやすくなります。",votes:8,voted:false}
+    ]},
+  {id:3,title:"サポートのワード管理のコツを教えてください",body:"ゴールド帯でサポートを使っています。ワードをどのタイミングでどこに置くかがよくわかりません。ビジョンスコアを上げたいです。",tags:["サポート","立ち回り"],author:"support_hana",time:"6/23 11:20",urgent:true,solved:false,
+    answers:[
+      {id:0,name:"Support_Queen",rank:"m",rankLabel:"マスター",role:"p",roleLabel:"プロプレイヤー",x:"support_queen_lol",body:"序盤はリバー付近の草むら優先、中盤以降はオブジェクト周辺とジャングルへの入口を意識してください。コントロールワードを常に1個持ち歩く習慣をつけましょう。",votes:15,voted:false},
+      {id:1,name:"vision_nerd",rank:"d",rankLabel:"ダイヤ",role:null,x:"vision_nerd_jp",body:"ビジョンスコアを試合後に確認すると改善点が見えやすいです。ゴールド帯でビジョンスコアが高い人は大幅に勝率が高いデータがあります。",votes:6,voted:false},
+      {id:2,name:"sp_guide_maki",rank:null,rankLabel:null,role:null,x:null,body:"ロアムする前に必ずボットに1本ワードを置いてから移動する癖をつけると、ADCへの負担が減って喜ばれます。",votes:4,voted:false}
+    ]},
+  {id:4,title:"最新パッチでナーフされたチャンピオンは避けるべきですか？",body:"14.12パッチでいくつかのチャンピオンが調整されましたが、練習してきたチャンピオンがナーフされた場合すぐに変えるべきでしょうか？",tags:["パッチノート","メタ考察"],author:"patch_watcher",time:"6/22 20:05",urgent:false,solved:false,answers:[]},
+  {id:5,title:"ボットレーンでCSを落とさずにトレードする方法は？",body:"シルバー帯でADCをやっています。CSを取りながらトレードに参加するタイミングがわかりません。",tags:["チャンピオン","立ち回り"],author:"cs_farmer",time:"6/22 15:33",urgent:false,solved:true,
+    answers:[
+      {id:0,name:"ADC_Pro_Yuki",rank:"d",rankLabel:"ダイヤ",role:null,x:null,body:"ミニオンがこちらのターゲットになっている間にトレードするのが基本です。相手がCSを取るために前に出てきた瞬間が狙い目です。",votes:11,voted:false}
+    ]},
+  {id:6,title:"ガンクされやすいレーナーの特徴と対策を教えてください",body:"ジャングルをメインでやっているとガンクが刺さりやすいレーンとそうでないレーンがあると感じます。逆の視点でガンクされないためのヒントが欲しいです。",tags:["立ち回り","ジャングル"],author:"antiganker",time:"6/21 14:10",urgent:false,solved:false,
+    answers:[
+      {id:0,name:"JG_Hayato",rank:"m",rankLabel:"マスター",role:"p",roleLabel:"元プロ",x:"hayato_jg",body:"ワードを置いていることと、常にレーンを走れる位置にいることが基本です。ミニマップを5秒に1回確認する習慣をつけましょう。",votes:14,voted:false}
+    ]}
+];
+
+let currentTab='open', currentFilter='all', currentSearch='', currentCat='すべて';
+
+const rankClasses = {c:'rc',m:'rm',d:'rd',p:'rp'};
+const roleClasses = {p:'role-p',s:'role-s',c:'role-c'};
+
+function authorHtml(a) {
+  let h = '';
+  if (a.rank) h += `<span class="rbadge ${rankClasses[a.rank]}">${a.rankLabel}</span>`;
+  if (a.role) h += `<span class="${roleClasses[a.role]}">${a.roleLabel}</span>`;
+  h += `<span class="ans-name">${a.name}</span>`;
+  if (a.x) h += `<a class="xlink" href="https://x.com/${a.x}" target="_blank">${xSVG} @${a.x}</a>`;
+  return h;
+}
+
+function getBestIdx(answers) {
+  if (!answers.length) return -1;
+  let max = 0, idx = -1;
+  answers.forEach((a, i) => { if (a.votes > max) { max = a.votes; idx = i; } });
+  return max > 0 ? idx : -1;
+}
+
+function getFiltered() {
+  let qs = questions;
+  if (currentTab === 'open') qs = qs.filter(q => !q.solved);
+  else qs = qs.filter(q => q.solved);
+  if (currentFilter === 'urgent') qs = qs.filter(q => q.urgent);
+  if (currentFilter === 'beginner') qs = qs.filter(q => q.tags.includes('立ち回り'));
+  if (currentFilter === 'meta') qs = qs.filter(q => q.tags.includes('メタ考察'));
+  if (currentFilter === 'champ') qs = qs.filter(q => q.tags.includes('チャンピオン'));
+  if (currentCat !== 'すべて') qs = qs.filter(q => q.tags.includes(currentCat));
+  if (currentSearch) {
+    const kw = currentSearch.toLowerCase();
+    qs = qs.filter(q => q.title.toLowerCase().includes(kw) || q.body.toLowerCase().includes(kw) || q.tags.some(t => t.toLowerCase().includes(kw)));
+  }
+  return qs;
+}
+
+function renderList() {
+  const qs = getFiltered();
+  const el = document.getElementById('q-list');
+  if (!qs.length) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">該当する質問が見つかりませんでした</div>`; return; }
+  el.innerHTML = qs.map(q => `
+    <div class="q-row" onclick="showDetail(${q.id})">
+      <div class="q-row-cat">${q.tags.join('、')}</div>
+      <div class="q-row-title">${q.title}${q.urgent ? ` <span class="urgent-badge">急募</span>` : ''}</div>
+      <div class="q-row-meta">
+        <span class="q-icon${q.answers.length > 0 ? ' answered' : ''}">!</span>
+        <span class="q-cnt">${q.answers.length}</span>
+        <span class="q-date">${q.time}</span>
+        ${q.answers.length > 0 ? `<span class="q-ans-ok">${q.answers.length}件の回答</span>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function renderCats() {
+  document.getElementById('cat-grid').innerHTML = CATS.map(c => `
+    <div class="cat-chip${c === currentCat ? ' active-cat' : ''}" onclick="setCat('${c}')">
+      <span class="cat-chip-name">${c}</span>
+      <span class="cat-count">${CAT_COUNTS[c]}</span>
+    </div>`).join('');
+}
+
+function renderRanking() {
+  const ranked = [...questions]
+    .filter(q => q.answers.length > 0)
+    .map(q => ({ ...q, totalVotes: q.answers.reduce((s, a) => s + a.votes, 0) }))
+    .sort((a, b) => b.totalVotes - a.totalVotes).slice(0, 5);
+  document.getElementById('rank-list').innerHTML = ranked.map((q, i) => `
+    <div class="rank-row" onclick="showDetail(${q.id})">
+      <span class="rank-num${i===0?' rn1':i===1?' rn2':i===2?' rn3':''}">${i+1}</span>
+      <div class="rank-info">
+        <div class="rank-q">${q.title}</div>
+        <div class="rank-sub">${q.tags[0]} · ${q.time}</div>
+      </div>
+      <span class="rank-votes">▲${q.totalVotes}</span>
+    </div>`).join('');
+
+  const urgent = questions.filter(q => q.urgent && !q.solved).slice(0, 4);
+  document.getElementById('urgent-list').innerHTML = urgent.map((q, i) => `
+    <div class="rank-row" onclick="showDetail(${q.id})">
+      <span class="rank-num${i===0?' rn1':''}">${i+1}</span>
+      <div class="rank-info">
+        <div class="rank-q">${q.title}</div>
+        <div class="rank-sub">${q.tags[0]} · ${q.time}</div>
+      </div>
+      <span class="rank-cnt">${q.answers.length}件</span>
+    </div>`).join('');
+}
+
+function setTab(btn, val) {
+  currentTab = val;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function setFilter(el, val) {
+  currentFilter = val;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active-chip'));
+  el.classList.add('active-chip');
+  renderList();
+}
+
+function setCat(cat) {
+  currentCat = cat;
+  currentSearch = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('search-banner').style.display = 'none';
+  renderCats(); renderList();
+}
+
+function onSearch(val) {
+  currentSearch = val.trim();
+  const b = document.getElementById('search-banner');
+  if (currentSearch) { b.style.display = 'flex'; document.getElementById('search-banner-text').textContent = `「${currentSearch}」の検索結果`; }
+  else b.style.display = 'none';
+  renderList();
+}
+
+function clearSearch() {
+  currentSearch = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('search-banner').style.display = 'none';
+  renderList();
+}
+
+function showDetail(id) {
+  const q = questions[id];
+  const bestIdx = getBestIdx(q.answers);
+  let aHtml = q.answers.length === 0
+    ? `<p style="color:var(--text-muted);font-size:13px;padding:16px 0">まだ回答がありません。最初に回答しましょう！</p>`
+    : q.answers.map((a, i) => `
+      <div class="answer-card${i === bestIdx ? ' best-ans' : ''}">
+        <div class="ans-top">
+          <div class="ans-author">${authorHtml(a)}</div>
+          <div class="vote-col">
+            ${i === bestIdx ? `<span class="best-pill">👑 ベストアンサー</span>` : ''}
+            <button class="vote-btn${a.voted ? ' voted' : ''}" onclick="vote(${id},${i})">▲ ${a.votes}票</button>
+          </div>
+        </div>
+        <div class="ans-body">${a.body}</div>
+      </div>`).join('');
+
+  document.getElementById('detail-page').innerHTML = `
+    <div class="detail-wrap">
+      <div class="detail-main">
+        <button class="back-btn" onclick="showList()">← 一覧に戻る</button>
+        <div class="detail-q-card">
+          <div class="detail-q-tags">${q.tags.map(t => `<span class="q-tag">${t}</span>`).join('')}${q.urgent ? `<span class="q-tag-urgent">急募</span>` : ''}</div>
+          <div class="detail-q-title">${q.title}</div>
+          <div class="detail-q-body">${q.body}</div>
+        </div>
+        <div class="answers-header">${q.answers.length}件の回答</div>
+        ${aHtml}
+        <div class="ans-form-card">
+          <div class="ans-form-title">回答を投稿する</div>
+          <div class="form-group"><textarea class="form-textarea" id="ans-body-${id}" placeholder="回答を入力してください…"></textarea></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">ランク（任意）</label>
+              <select class="form-input" id="ans-rank-${id}"><option value="">表示しない</option><option value="c">チャレンジャー</option><option value="m">マスター</option><option value="d">ダイヤ</option><option value="p">プラチナ</option></select></div>
+            <div class="form-group"><label class="form-label">役割（任意）</label>
+              <select class="form-input" id="ans-role-${id}"><option value="">指定しない</option><option value="p">プロプレイヤー</option><option value="s">ストリーマー</option><option value="c">コーチ</option></select></div>
+            <div class="form-group"><label class="form-label">X（任意）</label>
+              <div class="xpre-wrap"><span class="xpre">@</span><input class="form-input" id="ans-x-${id}" type="text" placeholder="username" style="padding-left:22px"></div></div>
+          </div>
+          <button class="submit-btn" onclick="postAnswer(${id})">回答を投稿する</button>
+        </div>
+      </div>
+      <div class="side-col">
+        <div class="side-card">
+          <div class="side-card-head">🏆 Q&Aランキング</div>
+          <div class="rank-list" id="rank-list-d"></div>
+        </div>
+        <div class="side-card">
+          <div class="side-card-head">🔥 急募の質問</div>
+          <div class="rank-list" id="urgent-list-d"></div>
+        </div>
+      </div>
+    </div>`;
+
+  // render sidebar in detail too
+  const ranked = [...questions].filter(q => q.answers.length > 0).map(q => ({...q, tv: q.answers.reduce((s,a)=>s+a.votes,0)})).sort((a,b)=>b.tv-a.tv).slice(0,5);
+  document.getElementById('rank-list-d').innerHTML = ranked.map((q,i)=>`<div class="rank-row" onclick="showDetail(${q.id})"><span class="rank-num${i===0?' rn1':i===1?' rn2':i===2?' rn3':''}">${i+1}</span><div class="rank-info"><div class="rank-q">${q.title}</div><div class="rank-sub">${q.tags[0]} · ${q.time}</div></div><span class="rank-votes">▲${q.tv}</span></div>`).join('');
+  const urg = questions.filter(q=>q.urgent&&!q.solved).slice(0,4);
+  document.getElementById('urgent-list-d').innerHTML = urg.map((q,i)=>`<div class="rank-row" onclick="showDetail(${q.id})"><span class="rank-num${i===0?' rn1':''}">${i+1}</span><div class="rank-info"><div class="rank-q">${q.title}</div><div class="rank-sub">${q.tags[0]} · ${q.time}</div></div><span class="rank-cnt">${q.answers.length}件</span></div>`).join('');
+
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('list-page').style.display = 'none';
+  document.getElementById('detail-page').style.display = 'block';
+  document.getElementById('ask-page').style.display = 'none';
+}
+
+function vote(qid, aid) {
+  const a = questions[qid].answers[aid];
+  if (a.voted) { a.votes--; a.voted = false; } else { a.votes++; a.voted = true; }
+  showDetail(qid);
+}
+
+function postAnswer(qid) {
+  const body = document.getElementById(`ans-body-${qid}`).value.trim();
+  if (!body) { alert('回答本文を入力してください'); return; }
+  const rv = document.getElementById(`ans-rank-${qid}`).value;
+  const rov = document.getElementById(`ans-role-${qid}`).value;
+  const xv = document.getElementById(`ans-x-${qid}`).value.trim();
+  const rl = {c:'チャレンジャー',m:'マスター',d:'ダイヤ',p:'プラチナ'};
+  const rol = {p:'プロプレイヤー',s:'ストリーマー',c:'コーチ'};
+  questions[qid].answers.push({ id: questions[qid].answers.length, name:'あなた', rank:rv||null, rankLabel:rl[rv]||null, role:rov||null, roleLabel:rol[rov]||null, x:xv||null, body, votes:0, voted:false });
+  showDetail(qid);
+}
+
+function showList() {
+  document.getElementById('hero').style.display = '';
+  document.getElementById('list-page').style.display = 'block';
+  document.getElementById('detail-page').style.display = 'none';
+  document.getElementById('ask-page').style.display = 'none';
+  renderList(); renderCats(); renderRanking();
+}
+
+function showAsk() {
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('list-page').style.display = 'none';
+  document.getElementById('detail-page').style.display = 'none';
+  document.getElementById('ask-page').style.display = 'block';
+  document.getElementById('ask-tags').innerHTML = ['チャンピオン','ビルド','立ち回り','ジャングル','サポート','パッチノート','メタ考察']
+    .map(t => `<span style="font-size:12px;padding:4px 11px;border-radius:4px;border:1px solid var(--border);color:var(--text-sub);cursor:pointer;display:inline-block;font-family:var(--font);transition:all .12s" onclick="this.style.borderColor=this.style.borderColor==='#3b82f6'?'var(--border)':'#3b82f6';this.style.color=this.style.color==='#1d4ed8'?'var(--text-sub)':'#1d4ed8';this.style.background=this.style.background==='#eff6ff'?'#fff':'#eff6ff'">${t}</span>`).join('');
+}
+
+function openModal(type) {
+  document.getElementById('modal-bg').classList.add('show');
+  const isLogin = type === 'login';
+  document.getElementById('modal-title').textContent = isLogin ? 'ログイン' : '会員登録';
+  document.getElementById('modal-body').innerHTML = `
+    ${!isLogin ? `<div class="form-group"><label class="form-label">ユーザー名</label><input class="form-input" type="text" placeholder="summoner_name"></div>` : ''}
+    <div class="form-group"><label class="form-label">メールアドレス</label><input class="form-input" type="email" placeholder="your@email.com"></div>
+    <div class="form-group"><label class="form-label">パスワード</label><input class="form-input" type="password" placeholder="••••••••"></div>
+    <button class="modal-submit">${isLogin ? 'ログイン' : '登録する'}</button>
+    <div class="modal-switch">${isLogin ? `アカウントをお持ちでない方は<a onclick="openModal('register')">会員登録</a>` : `すでにアカウントをお持ちの方は<a onclick="openModal('login')">ログイン</a>`}</div>`;
+}
+function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
+function closeModalBg(e) { if (e.target === document.getElementById('modal-bg')) closeModal(); }
+
+renderList(); renderCats(); renderRanking();
+</script>
+</body>
+</html>
